@@ -1,0 +1,10 @@
+﻿  PongGame.cpp
+LINK : warning LNK4098: la biblioteca predeterminada'LIBCMT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
+  Generando código
+  5 of 5 functions (100.0%) were compiled, the rest were copied from previous compilation.
+    4 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Generación de código finalizada
+glew32s.lib(glew.obj) : warning LNK4099: no se encontró PDB 'vc120.pdb' con 'glew32s.lib(glew.obj)' o en 'C:\Users\Richard\Desktop\PongGame\PongGame\x64\Release\vc120.pdb'; se vinculará el objeto sin tener en cuenta información de depuración
+  PongGame.vcxproj -> C:\Users\Richard\Desktop\PongGame\PongGame\x64\Release\PongGame.exe
+  PongGame.vcxproj -> C:\Users\Richard\Desktop\PongGame\PongGame\x64\Release\PongGame.pdb (Full PDB)
