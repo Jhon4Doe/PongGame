@@ -28,21 +28,27 @@ const char* vertexSource = R"glsl(
     #version 330 core
 
     in vec2 position;
+	in vec3 color;
 
-    void main()
-    {
-        gl_Position = vec4(position, 0.0, 1.0);
-    }
+	out vec3 Color;
+
+	void main()
+	{
+		Color = color;
+		gl_Position = vec4(position, 0.0, 1.0);
+	}
 )glsl";
 
 const char* fragmentSource = R"glsl(
 	#version 330 core
+	
+	in vec3 Color;
 
 	out vec4 outColor;
 
 	void main()
 	{
-		outColor = vec4(1.0, 1.0, 1.0, 1.0);
+		outColor = vec4(Color, 1.0);
 	}
 )glsl";
 
@@ -52,12 +58,11 @@ int main()
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
 
-
+	glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL", nullptr, nullptr); // Windowed
@@ -92,9 +97,9 @@ int main()
 	
 
 	float vertices[] = {
-		0.0f,  0.5f, // Vertex 1 (X, Y)
-		0.5f, -0.5f, // Vertex 2 (X, Y)
-		-0.5f, -0.5f  // Vertex 3 (X, Y)
+		0.0f,  0.5f, 1.0f, 0.0f, 0.0f, // Vertex 1: Red
+		0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // Vertex 2: Green
+		-0.5f, -0.5f, 0.0f, 0.0f, 1.0f  // Vertex 3: Blue
 	};
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);	// Cargamos el espacio del array buffer a la GPU
@@ -148,26 +153,47 @@ int main()
 	//Usar finalmente juntamos los shaders en el programa
 	glUseProgram(shaderProgram);
 
+	//GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+	//glEnableVertexAttribArray(posAttrib);
+	//glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
 	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
 	glEnableVertexAttribArray(posAttrib);
-	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE,	5 * sizeof(float), 0);
+
+	GLint colAttrib = glGetAttribLocation(shaderProgram, "color");
+	glEnableVertexAttribArray(colAttrib);
+	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
 
 	while (!glfwWindowShouldClose(window))
 	{
-
-		glfwPollEvents();
-
 		// Clear the screen to black
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Draw a triangle from the 3 vertices
+		//// Draw a triangle from the 3 vertices
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
+		GLint uniColor = glGetUniformLocation(shaderProgram, "triangleColor");
+
+		float time = (float)glfwGetTime();
+		glUniform3f(uniColor, (sin(time * 2.0f) + 1.0f) / 2.0f, 0.0f, 0.0f);
+
+		glfwPollEvents();
 		glfwSwapBuffers(window);
+
+		//// Clear the screen to black
+		//glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		////// Draw a triangle from the 3 vertices
+		//glDrawArrays(GL_TRIANGLES, 0, 3);
+
 
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, GL_TRUE);
+
+		//std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
 	}
 
